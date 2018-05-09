@@ -307,7 +307,8 @@ class LevelParser {
   }
 }
 
-const plan = [
+// Пример кода для дебага класса LevelParser
+/*const plan = [
   ' @ ',
   'x!x'
 ];
@@ -322,4 +323,61 @@ level.grid.forEach((line, y) => {
   line.forEach((cell, x) => console.log(`(${x}:${y}) ${cell}`));
 });
 
-level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));
+level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));*/
+
+class Fireball extends Actor {
+  constructor(coords = new Vector(0, 0), speed = new Vector(0, 0)) {
+    super(coords, new Vector(1, 1), speed);
+  }
+
+  get type() {
+    return 'fireball';
+  }
+
+  // Создает и возвращает вектор Vector следующей позиции шаровой молнии
+  getNextPosition(time = 1) {
+    return this.pos.plus(this.speed.times(time));
+  }
+
+  // Обрабатывает столкновение молнии с препятствием. Меняет вектор скорости на противоположный
+  handleObstacle() {
+    this.speed = this.speed.times(-1);
+  }
+
+  // Обновляет состояние движущегося объекта
+  act(time, grid) {
+    let nextPos = this.getNextPosition(time);
+    let obstacle = grid.obstacleAt(nextPos, this.size);
+    if (obstacle) {
+      this.handleObstacle();
+    }
+    else {
+      this.pos = nextPos;
+    }
+  }
+}
+
+// Пример кода для дебага класса Fireball
+/*const time = 5;
+const speed = new Vector(1, 0);
+const position = new Vector(5, 5);
+
+const ball = new Fireball(position, speed);
+
+const nextPosition = ball.getNextPosition(time);
+console.log(`Новая позиция: ${nextPosition.x}: ${nextPosition.y}`);
+
+ball.handleObstacle();
+console.log(`Текущая скорость: ${ball.speed.x}: ${ball.speed.y}`);*/
+
+class HorizontalFireball extends Fireball {
+  constructor(coords) {
+    super(coords, new Vector(2, 0));
+  }
+}
+
+class VerticalFireball extends Fireball {
+  constructor(coords) {
+    super(coords, new Vector(0, 2));
+  }
+}
