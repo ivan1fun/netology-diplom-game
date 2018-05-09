@@ -215,7 +215,8 @@ class Level {
   }
 }
 
-const grid = [
+// Пример кода для дебага класса Level
+/*const grid = [
   [undefined, undefined],
   ['wall', 'wall']
 ];
@@ -250,4 +251,75 @@ if (obstacle) {
 const otherActor = level.actorAt(player);
 if (otherActor === fireball) {
   console.log('Пользователь столкнулся с шаровой молнией');
+}*/
+
+class LevelParser {
+  constructor(dict) {
+    this.dict = Object.assign({}, dict);
+  }
+
+  // Возвращает конструктор объекта по его символу, используя словарь
+  actorFromSymbol(sym) {
+    return this.dict[sym];
+  }
+
+  // Возвращает строку, соответствующую символу препятствия
+  obstacleFromSymbol(sym) {
+    if (sym === 'x') {
+      return 'wall';
+    }
+    if (sym === '!') {
+      return 'lava';
+    }
+    return;
+  }
+
+  /* Принимает массив строк и преобразует его в массив массивов,
+  в ячейках которого хранится либо строка, соответствующая препятствию,
+  либо undefined */
+  createGrid(plan) {
+    return plan.map(el => el.split('').map(el => this.obstacleFromSymbol(el)));
+  }
+
+  /* Принимает массив строк и преобразует его в массив
+  движущихся объектов, используя для их создания классы из словаря */
+  createActors(actors) {
+    return actors.reduce((memo, el, y) => {
+      el.split('').forEach((item, x) => {
+        let constructor = this.actorFromSymbol(item);
+        if (typeof constructor === 'function') {
+          let obj = new constructor(new Vector(x, y));
+          if (obj instanceof Actor) {
+            memo.push(obj);
+            return memo;
+          }
+        }
+      });
+      return memo;
+    }, []);
+  }
+
+  /* Принимает массив строк, создает и возвращает игровое поле,
+  заполненное препятствиями и движущимися объектами, полученными
+  на основе символов и словаря */
+  parse(strings) {
+    return new Level(this.createGrid(strings), this.createActors(strings));
+  }
 }
+
+const plan = [
+  ' @ ',
+  'x!x'
+];
+
+const actorsDict = Object.create(null);
+actorsDict['@'] = Actor;
+
+const parser = new LevelParser(actorsDict);
+const level = parser.parse(plan);
+
+level.grid.forEach((line, y) => {
+  line.forEach((cell, x) => console.log(`(${x}:${y}) ${cell}`));
+});
+
+level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));
