@@ -432,7 +432,28 @@ class Coin extends Actor {
 }
 
 class Player extends Actor {
-  constructor(coords) {
-    super(coords.plus(new Vector(0, -0.5)), new Vector(0.6, 0.6))
+  constructor(coords = new Vector(0, 0)) {
+    super(coords.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5));
+  }
+
+  get type() {
+    return 'player';
   }
 }
+
+const schemas = loadLevels();
+
+const actors = {
+  '@': Player,
+  '=': HorizontalFireball,
+  '|': VerticalFireball,
+  'o': Coin,
+  'v': FireRain
+}
+
+const parser = new LevelParser(actors);
+
+schemas.then(result => {
+  runGame(JSON.parse(result), parser, DOMDisplay)
+  .then(() => alert('Успех! Вы выиграли!'));
+});
