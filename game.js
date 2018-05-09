@@ -389,17 +389,44 @@ class FireRain extends Fireball {
     this.start = coords;
   }
 
+  // Метод возвращает координаты на начальные
   handleObstacle() {
     this.pos = this.start;
   }
+}
 
-  act(time, level) {
-    const nextPos = this.getNextPosition(time);
-    const obstacle = level.obstacleAt(nextPos, this.size);
-    if (obstacle) {
-      this.handleObstacle();
-    } else {
-      this.pos = nextPos;
-    }
+class Coin extends Actor {
+  constructor(coords = new Vector(0, 0)) {
+    super(coords.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
+    this.springSpeed = 8; // Скорость подпрыгивания
+    this.springDist = 0.07; // Радиус подпрыгивания
+    this.spring = Math.random() * (Math.PI * 2); // Фаза подпрыгивания
+    this.start = this.pos; // Начальные координаты
+  }
+
+  get type() {
+    return 'coin';
+  }
+
+  // Обновляет фазу подпрыгивания
+  updateSpring(time = 1) {
+    this.spring += this.springSpeed * time;
+  }
+
+  // Создает и возвращает вектор подпрыгивания
+  getSpringVector() {
+    let newY = Math.sin(this.spring) * this.springDist;
+    return new Vector(0, newY);
+  }
+
+  // Обновляет текущую фазу, создает и возвращает вектор новой позиции монетки
+  getNextPosition(time = 1) {
+    this.updateSpring(time);
+    return this.start.plus(this.getSpringVector());
+  }
+
+  // Получает новую позицию объекта и задает её как текущую
+  act(time) {
+    this.pos = this.getNextPosition(time);
   }
 }
