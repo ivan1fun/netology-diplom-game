@@ -47,7 +47,6 @@ class Actor {
     this.pos = pos;
     this.size = size;
     this.speed = speed;
-    this.act = function() {};
   }
 
   get type() {
@@ -69,6 +68,8 @@ class Actor {
   get bottom() {
     return this.pos.y + this.size.x;
   }
+
+  act() {}
 
   // Метод проверяет, пересекается ли текущий объект с переданным объектом
   isIntersect(obj) {
@@ -379,5 +380,26 @@ class HorizontalFireball extends Fireball {
 class VerticalFireball extends Fireball {
   constructor(coords) {
     super(coords, new Vector(0, 2));
+  }
+}
+
+class FireRain extends Fireball {
+  constructor(coords) {
+    super(coords, new Vector(0, 3));
+    this.start = coords;
+  }
+
+  handleObstacle() {
+    this.pos = this.start;
+  }
+
+  act(time, level) {
+    const nextPos = this.getNextPosition(time);
+    const obstacle = level.obstacleAt(nextPos, this.size);
+    if (obstacle) {
+      this.handleObstacle();
+    } else {
+      this.pos = nextPos;
+    }
   }
 }
