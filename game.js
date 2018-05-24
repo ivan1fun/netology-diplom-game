@@ -101,7 +101,7 @@ class Level {
   объект в переданной позиции, и если да, вернёт этот объект */
   actorAt(obj) {
     if (!(obj instanceof Actor)) {
-      throw new new Error('Объект не передан или не является объектом типа Actor');
+      throw new Error('Объект не передан или не является объектом типа Actor');
     }
 
     return this.actors.find(el => el.isIntersect(obj));
@@ -111,10 +111,10 @@ class Level {
   этот метод контролирует выход объекта за границы игрового поля.*/
   obstacleAt(pos, size) {
     if (!(pos instanceof Vector)) {
-      throw  new new Error('Переданная позиция не является объектом типа Vector');
+      throw new Error('Переданная позиция не является объектом типа Vector');
     }
     if (!(size instanceof Vector)) {
-      throw  new new Error('Переданный размер не является объектом типа Vector');
+      throw new Error('Переданный размер не является объектом типа Vector');
     }
 
     let left = Math.floor(pos.x);
